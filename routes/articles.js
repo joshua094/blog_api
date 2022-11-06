@@ -11,9 +11,8 @@ router.get('/new', passport.authenticate('jwt', { session: false }) , (req,res) 
     res.render('articles/new', { article: new Article() })
 })
 
-// router.get('/new', passport.authenticate('jwt', { session: false }) , articleController.newArticle )
 
-router.get('/edit/:id', async (req,res) => {
+router.get('/edit/:id', passport.authenticate('jwt', { session: false }) , async (req,res) => {
     const article = await Article.findById(req.params.id)
     res.render('articles/edit', { article: article })
 })
@@ -29,13 +28,13 @@ router.post('/', async (req, res, next) => {
     next()
 }, saveArticleAndRedirect('new'))
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', passport.authenticate('jwt', { session: false }) , async (req, res, next) => {
     req.article = await Article.findById(req.params.id)
     next()
 }, saveArticleAndRedirect('edit'))
 
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', passport.authenticate('jwt', { session: false }) , async (req, res) => {
     await Article.findByIdAndDelete(req.params.id)
     res.redirect('/')
 })
@@ -46,6 +45,8 @@ function saveArticleAndRedirect(path) {
             article.title = req.body.title
             article.description = req.body.description
             article.markdown = req.body.markdown
+            article.tags = req.body.tags
+            article.author = req.body.author
             // article.read_count = function WordCount(mark) { 
             //     return str.split(" ").length;
             //   }

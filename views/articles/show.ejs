@@ -14,9 +14,16 @@
         <div class="text-muted mb-2"><%= article.createdAt.toLocaleDateString() %> </div>
         <a href="/" class="btn btn-secondary">All Articles</a>
         <a href="/articles/edit/<%= article.id %>" class="btn btn-info">Edit</a>
+        <div>
+            <h6 class="text-muted">State: <%= article.state %>  </h6> <h6 class="text-muted">Read Count: <%= article.read_count %>  </h6>
+            <h6 class="text-muted">Reading Time: <%= JSON.stringify(article.reading_time) %>  </h6>
+        </div>
 
         <div> 
             <%- article.sanitizedHtml %> 
+        </div>
+        <div>
+            <%- article.tags %> 
         </div>
     </div>
 </body>
