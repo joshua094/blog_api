@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const marked = require('marked')
+const user = require('../models/user')
 const slugify = require('slugify')
 const createDomPurify = require('dompurify')
 const { JSDOM } = require('jsdom')
@@ -33,7 +34,7 @@ const articleSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    authors: {
+    author: {
         type: String,
         required: true
     },
@@ -46,7 +47,7 @@ const articleSchema = new mongoose.Schema({
         type: Number
     },
     reading_time: {
-        type: Number
+        type: Object
     }
 })
 
@@ -62,6 +63,8 @@ articleSchema.pre('validate', function(next) {
 
         this.reading_time = readingTime(this.sanitizedHtml)
     }
+
+    this.author = user.firstname + user.lastname
     
 
     next()

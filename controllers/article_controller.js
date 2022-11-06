@@ -1,4 +1,6 @@
 const user = require('./models/user')
+const Article = require('./../models/article')
+
 
 async function checkOwner (req,res,next) {
     if (req.user == null) {
@@ -8,4 +10,12 @@ async function checkOwner (req,res,next) {
     if (req.user.role) {
         
     }
+}
+
+function newArticle(req, res) {
+    res.render('articles/new', { article: new Article() })
+}
+
+module.exports = {
+    newArticle
 }

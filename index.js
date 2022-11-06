@@ -56,7 +56,7 @@ app.get('/', async (req, res) => {
     res.render('articles/index', { articles: articles })
 })
 
-app.use('/articles', passport.authenticate('jwt', { session: false }) , articleRouter)
+app.use('/articles' , articleRouter)
 
 app.use('/user', userRoute)
 

@@ -1,10 +1,17 @@
 const express = require('express');
+const passport = require('passport')
 const Article = require('./../models/article')
+const user = require('../models/user')
+// const articleController = require('../controllers/article_controller')
 const router = express.Router();
 
-router.get('/new', (req,res) => {
+require('../authentication/auth') 
+
+router.get('/new', passport.authenticate('jwt', { session: false }) , (req,res) => {
     res.render('articles/new', { article: new Article() })
 })
+
+// router.get('/new', passport.authenticate('jwt', { session: false }) , articleController.newArticle )
 
 router.get('/edit/:id', async (req,res) => {
     const article = await Article.findById(req.params.id)
