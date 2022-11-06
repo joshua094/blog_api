@@ -5,5 +5,7 @@ async function checkOwner (req,res,next) {
         res.status(403)
         res.send('You need to be a user')
     }
-    if (req.user.role)
+    if (req.user.role) {
+        
+    }
 }
