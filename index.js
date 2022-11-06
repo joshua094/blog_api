@@ -1,11 +1,27 @@
 const express = require('express');
-const articleRouter = require('./routes/articles')
+const passport = require('passport');
+const express_session = require('express-session')
+const articleRouter = require('./routes/articles');
 require('dotenv').config();
 const Article = require('./models/article')
 const methodOverride = require('method-override')
 const app = express();
 const  userRoute = require('./routes/user')
 const user = require('./models/user')
+const bodyParser = require('body-parser')
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }))
+
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    extended: true
+})); 
+
+
+app.use(passport.initialize());
+// app.use(passport.session());
+
 
 const mongoose = require('mongoose')
 
@@ -24,10 +40,11 @@ function connectToMongoDB() {
     })
 }
 
+require('./authentication/auth') //Signup and authentication middleware
+
 connectToMongoDB();
 
 app.set('view engine', 'ejs')
-app.use(express.urlencoded({ extended: false }))
 app.use(methodOverride('_method'))
 
 
@@ -39,7 +56,7 @@ app.get('/', async (req, res) => {
     res.render('articles/index', { articles: articles })
 })
 
-app.use('/articles', articleRouter)
+app.use('/articles', passport.authenticate('jwt', { session: false }) , articleRouter)
 
 app.use('/user', userRoute)
 

@@ -3,7 +3,10 @@ const marked = require('marked')
 const slugify = require('slugify')
 const createDomPurify = require('dompurify')
 const { JSDOM } = require('jsdom')
+const { authorize } = require('passport')
 const dompurify = createDomPurify(new JSDOM().window)
+const Str = require('@supercharge/strings')
+const readingTime = require('reading-time')
 
 const articleSchema = new mongoose.Schema({
     title: {
@@ -29,6 +32,21 @@ const articleSchema = new mongoose.Schema({
     sanitizedHtml: {
         type: String,
         required: true
+    },
+    authors: {
+        type: String,
+        required: true
+    },
+    state: {
+        type: String,
+        default: "draft",
+        enum: ["draft", "published"]
+    },
+    read_count: {
+        type: Number
+    },
+    reading_time: {
+        type: Number
     }
 })
 
@@ -38,8 +56,13 @@ articleSchema.pre('validate', function(next) {
     }
 
     if (this.markdown) {
-        this.sanitizedHtml = dompurify.sanitize(marked.parse(this.markdown))
+        this.sanitizedHtml = dompurify.sanitize(marked.Parser(this.markdown))
+
+        this.read_count = Str(this.sanitizedHtml).words().length
+
+        this.reading_time = readingTime(this.sanitizedHtml)
     }
+    
 
     next()
 })

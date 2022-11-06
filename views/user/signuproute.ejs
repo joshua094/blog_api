@@ -12,12 +12,16 @@
     <div class="container">
         <div class="form-group">
 
-            <form action="/user" method="POST">
+            <form action="/user/signup" method="POST">
 
                 <label for="email">Email</label>
                 <input required type="text" name="email" id="email" class="form-contol">
                 <label for="username">Username</label>
                 <input required type="text" name="username" id="username" class="form-contol">
+                <label for="username">Firstname</label>
+                <input required type="text" name="firstname" id="firstname" class="form-contol">
+                <label for="username">Lastname</label>
+                <input required type="text" name="lastname" id="lastname" class="form-contol">
                 <label for="password">Password</label>
                 <input required type="text" name="password" id="password" class="form-contol">
                 <button type="submit" class="btn btn-primary">Signup</button>

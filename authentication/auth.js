@@ -1,6 +1,6 @@
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
-const UserModel = require('../models/article');
+const UserModel = require('../models/user');
 require('dotenv').config();
 
 const JWTstrategy = require('passport-jwt').Strategy;
@@ -26,27 +26,43 @@ passport.use(
 // This middleware saves the information provided by the user to the database,
 // and then sends the user information to the next middleware if successful.
 // Otherwise, it reports an error.
+
 passport.use(
     'signup',
-        async (email, password, done) => {
+    new localStrategy(
+        {
+            usernameField : 'username',
+            passwordField : 'password',        
+            passReqToCallback : true
+        },
+        async (req, username, password, done) => {
             try {
-                const user = await UserModel.create({ email, password });
+                const email = await req.body.email;
+                const firstname = await req.body.firstname
+                const lastname = await req.body.lastname
+                const user = await UserModel.create({ username, password, email, firstname, lastname });
 
                 return done(null, user);
             } catch (error) {
                 done(error);
             }
         }
-    );
+    )
+);
 
 // This middleware authenticates the user based on the email and password provided.
 // If the user is found, it sends the user information to the next middleware.
 // Otherwise, it reports an error.
 passport.use(
     'login',
-        async (email, password, done) => {
+    new localStrategy(
+        {
+            usernameField: 'username',
+            passwordField: 'password'
+        },
+        async (username, password, done) => {
             try {
-                const user = await UserModel.findOne({ email });
+                const user = await UserModel.findOne({ username });
 
                 if (!user) {
                     return done(null, false, { message: 'User not found' });
@@ -63,4 +79,5 @@ passport.use(
                 return done(error);
             }
         }
-    );
+    )
+);

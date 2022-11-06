@@ -1,28 +1,38 @@
 const express = require('express');
-const user = require('../models/user')
 const passport = require('passport')
 const routers = express.Router();
+const jwt = require('jsonwebtoken')
+const bodyParser = require('body-parser')
+
+const app = express()
+// app.use(passport.session());
 
 
-routers.get('/login', (req, res) => {
-    res.render("user/login")
+app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: false
+})); 
+
+
+app.use(express.json());       // to support JSON-encoded bodies
+app.use(express.urlencoded({ extended: false })); // to support URL-encoded bodies
+
+routers.use(bodyParser.json());
+
+routers.get('/loginroute', (req, res) => {
+    res.render("user/loginroute")
 })
 
-routers.get('/signup', (req, res) => {
-    res.render("user/signup", { user: new user() })
+routers.get('/signuproute', (req, res) => {
+    res.render("user/signuproute")
 })
 
-// routers.post('/login-success', (req, res) => {
 
-// })
-
-// routers.post('/signup-success', (req, res) => {
-
-// })
 
 routers.post(
     '/signup',
     passport.authenticate('signup', { session: false }), async (req, res, next) => {
+        
         res.json({
             message: 'Signup successful',
             user: req.user
@@ -51,7 +61,7 @@ routers.post(
                         //You store the id and email in the payload of the JWT. 
                         // You then sign the token with a secret or key (JWT_SECRET), and send back the token to the user.
                         // DO NOT STORE PASSWORDS IN THE JWT!
-                        const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
+                        const token = jwt.sign({ user: body }, process.env.JWT_SECRET, { expiresIn: 3600 } );
 
                         return res.json({ token });
                     }
