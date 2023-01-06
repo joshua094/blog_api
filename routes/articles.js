@@ -17,7 +17,7 @@ router.post('/', articleController.createNewArticle , articleController.saveArti
 router.put('/:id', passport.authenticate('jwt', { session: false }) , articleController.updateArticle , articleController.saveArticleAndRedirect('edit'))
 
 
-router.delete('/:id', passport.authenticate('jwt', { session: false }) , articleController.deleteArticle )
+router.delete('/:id', passport.authenticate('jwt', { session: false }) , articleController.deleteArticleByID )
 
 
 

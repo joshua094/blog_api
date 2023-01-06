@@ -1,13 +1,14 @@
 const express = require('express');
 const passport = require('passport');
-const express_session = require('express-session')
 const articleRouter = require('./routes/articles');
+const rateLimit = require('express-rate-limit')
 require('dotenv').config();
 const Article = require('./models/article')
 const methodOverride = require('method-override')
+const logger = require('./logging/logger')
+const helmet = require('helmet')
 const app = express();
 const  userRoute = require('./routes/user')
-const user = require('./models/user')
 const bodyParser = require('body-parser')
 
 app.use(express.json());
@@ -18,6 +19,17 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 })); 
 
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
+// Apply the rate limiting middleware to all requests
+app.use(limiter)
+
+//Security middleware
+app.use(helmet())
 
 app.use(passport.initialize());
 // app.use(passport.session());
@@ -32,11 +44,11 @@ function connectToMongoDB() {
     mongoose.connect(MONGODB_URI);
     
     mongoose.connection.on('connected', () => {
-        console.log('Connected to MongoDB successfully');
+        logger.info('Connected to MongoDB successfully');
     });
     
     mongoose.connection.on('error', (err) => {
-        console.log('Error connecting to MongoDB', err);
+        logger.error(err)
     })
 }
 
@@ -60,4 +72,6 @@ app.use('/articles' , articleRouter)
 
 app.use('/user', userRoute)
 
-app.listen(PORT)
+app.listen(PORT, () => {
+    logger.info(`Server started on http://localhost:${PORT}`)
+})

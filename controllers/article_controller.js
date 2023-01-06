@@ -1,5 +1,12 @@
 const Article = require('./../models/article')
+const methodOverride = require('method-override')
+const express = require('express');
 
+
+const app = express();
+
+
+app.use(methodOverride('_method'))
 
 
 
@@ -44,6 +51,18 @@ async function deleteArticle (req, res) {
     res.redirect('/')
 }
 
+function deleteArticleByID(req, res) {
+    const id = req.params.id
+    Article.findByIdAndRemove(id)
+        .then(book => {
+            res.status(200).send(book)
+            res.redirect('/')
+        }).catch(err => {
+            console.log(err)
+            res.status(500).send(err)
+        })
+}
+
 
 function saveArticleAndRedirect(path) {
     return async (req, res) => {
@@ -74,5 +93,6 @@ module.exports = {
     createNewArticle,
     updateArticle,
     deleteArticle,
-    saveArticleAndRedirect
+    saveArticleAndRedirect,
+    deleteArticleByID
 }
